@@ -7,22 +7,21 @@ faceDetect = cv2.CascadeClassifier(
 cam = cv2.VideoCapture(0)
 
 
-def insertOrUpdate(Id, Name, Age, Gen):
-    conn = sqlite3.connect("FaceBase.db")
-    cmd = "SELECT * FROM Peoples WHERE ID="+str(Id)
+def insertOrUpdate(Id, Name, Age):
+    conn = sqlite3.connect("database.db")
+    cmd = "SELECT * FROM students WHERE ID="+str(Id)
     cursor = conn.execute(cmd)
     isRecordExist = 0
     for row in cursor:
         isRecordExist = 1
     if (isRecordExist == 1):
         # cmd="UPDATE Peoples SET Name="+str(Name)+"WHERE id="+str(Id)
-        conn.execute("UPDATE Peoples SET Name=? WHERE id=?", (Name, Id,))
-        conn.execute("UPDATE Peoples SET Age=? WHERE id=?", (Age, Id))
-        conn.execute("UPDATE Peoples SET Gender=? WHERE id=?", (Gen, Id,))
+        conn.execute("UPDATE students SET Name=? WHERE id=?", (Name, Id,))
+        conn.execute("UPDATE students SET Age=? WHERE id=?", (Age, Id))
     else:
         # cmd="INSERT INTO Peoples(id,Name,Age,Gender) Values("+str(Id)+","+str(Name)+","+str(Age)+","+str(Gen)+")"
         conn.execute(
-            "INSERT INTO Peoples(id,Name,Age,Gender) Values(?,?,?,?)", (Id, Name, Age, Gen))
+            "INSERT INTO students(id,Name,Age) Values(?,?,?)", (Id, Name, Age))
         # cmd2=""
         # cmd3=""
     conn.commit()
@@ -32,8 +31,7 @@ def insertOrUpdate(Id, Name, Age, Gen):
 Id = input('Enter User Id:')
 name = input('Enter User Name:')
 age = input('Enter User Age:')
-gen = input('Enter User Gender:')
-insertOrUpdate(Id, name, age, gen)
+insertOrUpdate(Id, name, age)
 sampleNum = 0
 while (True):
     ret, img = cam.read()
@@ -48,6 +46,7 @@ while (True):
     cv2.imshow("Face", img)
     cv2.waitKey(1)
     if (sampleNum > 20):
+        print("Done")
         break
 cam.release()
 cv2.destroyAllWindows()
